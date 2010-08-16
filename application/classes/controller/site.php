@@ -44,13 +44,13 @@ abstract class Controller_Site extends Controller_Template
 		if ($this->auto_render)
 		{
 			$this->template->styles = array(
-				'/media/css/screen.css'	=> 'screen, projection',
-				'/media/css/print.css'	=> 'print',
-				'/media/css/style.css'	=> 'screen, projection'
+				'media/css/screen.css'	=> 'screen, projection',
+				'media/css/print.css'	=> 'print',
+				'media/css/style.css'	=> 'screen, projection'
 			);
 
 			$this->template->scripts = array(
-				'/media/js/jquery-1.4.2.min.js'
+				'media/js/jquery-1.4.2.min.js'
 			);
 		}
 	}

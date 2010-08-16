@@ -1,17 +1,19 @@
-<h3><strong>FF2FB - Post Friendfeed to Facebook better. </strong></h3>
-<p>FF2FB is an ongoing project the aims to sync Friedfeed feeds to facebook
-in a more manageable way. This project is under heavy development. You may
-expect a lot of bugs and annoyances, however, as the development goes on
-those may get fixed. For the mean time, I synced my feeds to this site - those
-feeds include posts of mine and likes.</p>
-<div class="copyright">
-	<p>&copy; 2009-2010 FF2FB by <a href="http://lysender.co.cc/">Lysender</a>. All rights reserved.<br />
-	Proudly powered by Kohana v3</p>
+<div id="foot_nav" class="span-14 prefix-5 suffix-5 last">
+	<ul>
+		<li><?php echo HTML::anchor('/about', 'About') ?></li>
+		<li><?php echo HTML::anchor('/faq', 'FAQ') ?></li>
+		<li><?php echo HTML::anchor('/contribute', 'Contribute') ?></li>
+		<li><?php echo HTML::anchor('/credits', 'Credits') ?></li>
+		<li><?php echo HTML::anchor('/contact', 'Contact') ?></li>
+	</ul>
+</div>
+<div class="span-24">
+	<p><?php echo HTML::anchor('/', 'Kohana Documentation Project') ?></p>
 </div>
 
 <?php if (!IN_PRODUCTION && Kohana::$profiling): ?>
 <!-- Profiler stats -->
-<div id="kohana-profiler">
+<div id="kohana-profiler" class="span-24">
 	<?php echo View::factory('profiler/stats') ?>
 </div>
 <?php endif ?>

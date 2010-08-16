@@ -37,7 +37,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 /**
  * Set the production status by the server ip address.
  */
-define('IN_PRODUCTION', !(isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] == '127.0.0.1'));
+define('IN_PRODUCTION', false);
 
 /**
  * Set generic salt for application wide hashing
@@ -95,6 +95,17 @@ Kohana::modules(array(
 	// 'pagination' => MODPATH.'pagination', // Paging of results
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
 	'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+));
+
+/**
+ * Translated user guide
+ */
+Route::set('manual', 'manual(/<language>(/<page>))', array(
+		'page' => '.+',
+	))
+	->defaults(array(
+		'controller' => 'manual',
+		'action'     => 'docs',
 	));
 
 /**
@@ -107,14 +118,53 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'action'     => 'index',
 	));
 
-if ( ! defined('SUPPRESS_REQUEST'))
+/**
+ * Execute the main request using PATH_INFO. If no URI source is specified,
+ * the URI will be automatically detected.
+ */
+try
 {
-	/**
-	 * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
-	 * If no source is specified, the URI will be automatically detected.
-	 */
-	echo Request::instance()
-		->execute()
-		->send_headers()
-		->response;
+	if ( ! defined('SUPPRESS_REQUEST'))
+	{
+		// Attempt to execute the response
+		$request = Request::instance()->execute();
+	
+		// Display the request response.
+		echo $request->send_headers()->response;
+	}
+}
+catch (Exception $e)
+{
+	if ( ! IN_PRODUCTION)
+	{
+		// Just re-throw the exception
+		throw $e;
+	}
+
+	// Log the error
+	Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
+
+	// Create new request for serving error pages
+	$request = null;
+
+	// 404 errors are usually thrown as ReflectionException or 
+	// Kohana_Request_Exception when a controller/action is not
+	// found or a route is not set for a specific request
+	if ($e instanceof ReflectionException OR $e instanceof Kohana_Request_Exception)
+	{
+		// Create a 404 response
+		$request = Request::factory('error/404')->execute();
+
+		// insert the requested page to the error reponse
+		$uri = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '/';
+		$page = array('{KOHANA_REQUESTED_PAGE}' => URL::site("/$uri", true));
+		$request->response = strtr((string) $request->response, $page);
+	}
+	else
+	{
+		// create a 500 response
+		$request = Request::factory('error/500')->execute();
+	}
+
+	echo $request->send_headers()->response;
 }
