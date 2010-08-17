@@ -45,10 +45,10 @@
 
 <div id="manual" class="container">
 	<div id="content" class="span-17 suffix-1">
-		<div class="basic-nav"><?php echo $basic_nav ?></div>
+		<?php echo $basic_nav ?>
 		<div class="doc-content"><?php echo $content ?></div>
-		<div class="doc-topics"><?php echo $topics ?></div>
-		<div class="basic-nav"><?php echo $basic_nav ?></div>
+		<?php echo $topics ?>
+		<?php echo $basic_nav ?>
 	</div>
 	<div id="sidebar" class="span-6 last"><?php echo $sidebar ?></div>
 </div>

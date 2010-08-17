@@ -24,6 +24,31 @@ class Controller_Manual extends Controller_Site
 	public $page_meta;
 
 	/** 
+	 * The hierarchy from the top topic which is the manual
+	 * index, down to the current topic's parent
+	 *
+	 * Index key is the link and value is the title
+	 *
+	 * @var array
+	 */
+	protected $_topic_hierarchy;
+
+	/** 
+	 * For any given topic / page /article, this is the group
+	 * of topics which the current topic belongs
+	 *
+	 * @var array
+	 */
+	protected $_topic_group;
+
+	/** 
+	 * Child topics for the current topic
+	 *
+	 * @var array
+	 */
+	protected $_topics;
+
+	/** 
 	 * before()
 	 */
 	public function before()
@@ -33,6 +58,7 @@ class Controller_Manual extends Controller_Site
 		// Pre determine the requested page and set it up
 		$this->language = $this->request->param('language', $config->default_language);
 		$this->page = $this->request->param('page', $config->default_page);
+		unset($config);
 
 		// Set the translation language
 		I18n::$lang = $this->language;
@@ -59,125 +85,227 @@ class Controller_Manual extends Controller_Site
 	 */
 	public function action_docs()
 	{
-		$this->template->title = 'Kohana Documentation';
+		$file = $this->_file($this->page);
+		$this->page_meta = $this->_file_meta($this->page);
 
-		$file = $this->file($this->language, $this->page);
-		$this->page_meta = $this->file_meta($this->language, $this->page);
-
-		if ( ! $file)
+		if ( ! $file OR ! $this->page_meta)
 		{
 			throw new Kohana_Request_Exception('Requested documentation page is not found');
 		}
 
+		$this->template->title = $this->page_meta['title'];
 		$this->view = Markdown(file_get_contents($file));
 
 		// Build the sidebar
-		$sidebar_info = array();
-		$sidebar_info['doctree_info'] = $this->_doctree_info($this->language, $this->page);
-		$sidebar_info['doctree_siblings'] = $this->_doctree_siblings($this->language, $this->page);
-
+		$sidebar_info = $this->sidebar_nav();
 		$this->template->sidebar = View::factory('manual/sidebar')
 			->bind('sidebar_info', $sidebar_info);
 
-		// Build the basic nav
-		$basic_nav = array();
-
-		$this->template->basic_nav = View::factory('manual/nav')
-			->bind('basic_nav', $basic_nav);
-
 		// Build the child topics
-		$topics = (!empty($this->page_meta['children'])) ? $this->page_meta['children'] : array();
+		$topics = $this->topics();
 
 		$this->template->topics = View::factory('manual/topics')
 			->bind('topics', $topics);
+		
+		// Build the basic nav
+		$basic_nav = $this->basic_nav();
+		$this->template->basic_nav = View::factory('manual/nav')
+			->bind('basic_nav', $basic_nav);
 	}
-
-	/** 
-	 * Returns the full path to the doc file
-	 * 
-	 * @param string $language
-	 * @param string $page
-	 * @return string
-	 */
-	public function file($language, $page)
-	{
-		$path = $language.DIRECTORY_SEPARATOR.$this->_extract_path($page);
-
-		return Kohana::find_file('manual', $path, 'md');
-	}
-
-	/** 
-	 * Returns the file meta as an array
-	 *
-	 * @param string $language
-	 * @param string $page
-	 * @return array
-	 */
-	public function file_meta($language, $page)
-	{
-		$path = $language.DIRECTORY_SEPARATOR.$this->_extract_path($page);
-
-		// Find the file
-		$file = Kohana::find_file('manual', $path, 'php');
-
-		if ($file)
-		{
-			return include $file;
-		}
-
-		return false;
-	}	
 
 	/** 
 	 * Returns the navigation info of the current page
 	 *
-	 * @param string $language
-	 * @param string $page
 	 * @return array
 	 */
-	public function basic_nav($language, $page)
+	public function basic_nav()
 	{
+		// Case #1: We are at the index / top page of the documentation
+		if ( ! $this->page_meta['parent'])
+		{
+			// No navigation is needed
+			return false;
+		}
+
+		$current_topic = $this->page_meta['self'];
+		$first_topic = null;
+		$last_topic = null;
+		$first_child_topic = null;
+
+		$topic_group_count = count($this->_topic_group);
+
+		if (!empty($this->_topic_group))
+		{
+			// Get first topic group entry
+			$keys = array_keys($this->_topic_group);
+			$first_topic = reset($keys);
+
+			// Get last topic group entry
+			$last_topic = array_pop($keys);
+
+			// Get the first child topic if it exists
+			if ( ! empty($this->_topics))
+			{
+				$keys = array_keys($this->_topics);
+				$first_child_topic = reset($keys);
+			}
+		}
+
+		$nav = array(
+			'prev'	=> null,
+			'next'	=> null
+		);
+
+		if ( ! empty($this->_topics))
+		{
+			// Case #1: The current topic has child topics
+			// Next = First child topic
+			$nav['next'] = array(
+				'link'	=> $first_child_topic,
+				'title'	=> $this->_topics[$first_child_topic]
+			);
+		}
+		elseif ($current_topic == $first_topic AND $topic_group_count > 1)
+		{
+			// Case #2: The current topic is the first topic of the group
+			// and that there are more than 1 topic for the group
+			// Next = next topic from the group
+
+			// Remove the first topic node so that the final list will
+			// have the next link as the first node
+			$keys = array_keys($this->_topic_group);
+			array_shift($keys);
+			$node = reset($keys);
+			$nav['next'] = array(
+				'link'	=> $this->_topic_group[$node]['link'],
+				'title'	=> $this->_topic_group[$node]['title']
+			);
+		}
+		elseif ($topic_group_count == 1)
+		{
+			// Case #3: There is only 1 topic from the group
+			// It is a design decision that a topic should not have
+			// only 1 child topic, thus it must be more than one,
+			// otherwise, it must be none
+
+			throw new Exception('Design error: A topic should always contain more than 1 child topic');
+		}
+		elseif ($current_topic != $first_topic AND $current_topic != $last_topic)
+		{
+			// Case #3: We are in the middle of topics, not first, not last
+			// Previous = previous topic of the group
+			// Next = next topic of the group
+			
+			// We need to loop, there's no other way
+			$tmp_prev = null;
+			$tmp_next = null;
+			$tmp = null;
+			$found = false;
+			
+			foreach ($this->_topic_group as $key => $node)
+			{
+				if ($found)
+				{
+					$tmp_next = $key;
+					break;
+				}
+
+				if ($key == $current_topic)
+				{
+					$tmp_prev = $tmp;
+					$found = true;
+				}
+
+				$tmp = $key;
+			}
+
+			$nav['prev'] = array(
+				'link'	=> $this->_topic_group[$tmp_prev]['link'],
+				'title'	=> $this->_topic_group[$tmp_prev]['title']
+			);
+			
+			$nav['next'] = array(
+				'link'	=> $this->_topic_group[$tmp_next]['link'],
+				'title'	=> $this->_topic_group[$tmp_next]['title']
+			);
+		}
 		
+		// If no previous link is given, it is assume as the parent topic
+		if (empty($nav['prev']))
+		{
+			$nav['prev'] = array(
+				'link'	=> $this->_topic_hierarchy[$this->page_meta['parent']]['link'],
+				'title' => $this->_topic_hierarchy[$this->page_meta['parent']]['title']
+			);
+		}
+
+		return $nav;
 	}
 
 	/** 
 	 * Returns the sidebar navigation info of the current page
 	 *
-	 * @param string $language
-	 * @param string $page
 	 * @return array
 	 */
-	public function sidebar_nav($language, $page)
+	public function sidebar_nav()
 	{
 		$sidebar_info = array();
-		$sidebar_info['doctree_info'] = $this->_doctree_info($language, $page);
-		$sidebar_info['doctree_siblings'] = $this->_doctree_siblings($language, $page);
+		$sidebar_info['topic_hierarchy'] = $this->topic_hierarchy($this->page);
+		$sidebar_info['topic_group'] = $this->topic_group($this->page);
 
 		return $sidebar_info;
 	}
 
 	/** 
-	 * Returns the table of contents for the current page
-	 * Only returns the direct child topics / articles
+	 * Returns the child topics for the current topic / article
 	 *
-	 * @param string $language
-	 * @param string $page
 	 * @return array
 	 */
-	public function toc($language, $page)
+	public function topics()
 	{
-		return $this->page_meta['children'];
+		if ($this->_topics === null)
+		{
+			$this->_topics = $this->_topics();
+		}
+
+		return $this->_topics;
 	}
 
 	/** 
-	 * Returns the current page related pages
-	 * Related pages are retrived via parents child nodes
+	 * Returns the topics for the current article
+	 * Only returns the direct child topics / articles
 	 *
-	 * @param string $language
+	 * @return array
+	 */
+	protected function _topics()
+	{
+		$topics = array();
+
+		// Get the current path
+		$path = "/manual/$this->language/";
+
+		// Only add the current page when it is not index
+		// Then add a dot at the end to concatenate the children
+		if ($this->page != 'index')
+		{
+			$path .= "$this->page.";
+		}
+
+		foreach ($this->page_meta['children'] as $page => $title)
+		{
+			$topics[$path.$page] = $title;
+		}
+
+		return $topics;
+	}
+
+	/** 
+	 * Returns the current topic's group in which it belongs
+	 *
 	 * @param string $page
 	 * @return array
 	 */
-	protected function _doctree_siblings($language, $page)
+	public function topic_group($page)
 	{
 		if ( ! $this->page_meta['parent'])
 		{
@@ -185,72 +313,106 @@ class Controller_Manual extends Controller_Site
 			return false;
 		}
 
-		// Load parent meta
-		$current_node = $this->page_meta['self'];
-		$parent_node = str_replace(".$current_node", '', $page);
-
-		if ($parent_node == $page)
+		if ($this->_topic_group === null)
 		{
-			return false;
+			$this->_topic_group = $this->_topic_group($page, $this->page_meta['self']);
 		}
-		
-		$parent_meta = $this->file_meta($language, $parent_node);
+
+		return $this->_topic_group;
+	}
+
+	/** 
+	 * Returns the current topic's related topics
+	 * Related topics are retrived via parents child topics
+	 *
+	 * @param string $page
+	 * @param string $current_node
+	 * @return array
+	 */
+	protected function _topic_group($page, $current_node)
+	{
+		// Load parent meta
+		$parent_meta = null;
+		$parent_prefix = null;
+
+		if ($this->page_meta['parent'] == 'index')
+		{
+			$parent_prefix = '';
+			$parent_meta = $this->_file_meta('index');
+		}
+		else
+		{
+			$parent_node = str_replace(".$current_node", '', $page);
+			$parent_meta = $this->_file_meta($parent_node);
+			$parent_prefix = "$parent_node.";
+		}
+
 		if (empty($parent_meta))
 		{
-			throw new Exception("No parent article information is found for $page");
+			throw new Exception("No topic group information is found for $page");
 		}
 
-		$siblings = array();
+		$topics = array();
 
-		// Mark the current page / article
+		// Build the links
 		foreach ($parent_meta['children'] as $key => $val)
 		{
-			$siblings[$key] = array(
-				'link'	=> "/manual/$language/$parent_node/$key",
+			// Also marks the currently viewed article
+			$topics[$key] = array(
+				'link'	=> "/manual/$this->language/$parent_prefix$key",
 				'title'	=> $parent_meta['children'][$key],
 				'currently_viewed' => ($key == $current_node) ? true : false
 			);
 		}
 
-		return $siblings;
+		return $topics;
 	}
 
 	/** 
-	 * Returns the current page sub topics / articles
+	 * Returns the topic hierarchy from root down
+	 * to the current topic's parent topic
 	 *
-	 * @return array
-	 */
-	protected function _doctree_children()
-	{
-		return $this->page_meta['children'];
-	}
-
-	/** 
-	 * Returns an array of nodes starting from the current page
-	 * up to the root node to represent the heirarchy of pages
-	 * from which the article is traced from root to this page
-	 *
-	 * @param string $language
 	 * @param string $page
 	 * @return array
 	 */
-	protected function _doctree_info($language, $page)
+	public function topic_hierarchy($page)
+	{
+		if ($this->_topic_hierarchy === null)
+		{
+			$this->_topic_hierarchy = $this->_topic_hierarchy($page);
+		}
+
+		return $this->_topic_hierarchy;
+	}
+
+	/** 
+	 * Returns the links from the root topic down to the 
+	 * current topic's parent
+	 *
+	 * @param string $page
+	 * @return array
+	 */
+	protected function _topic_hierarchy($page)
 	{
 		// Traverse up to the root
 		$paths = explode('.', $page);
-		$doctree = array();
+		$hierarchy = array();
 
 		// Add the documentation root / index
-		$root_meta = $this->file_meta($language, 'index');
+		$root_meta = $this->_file_meta('index');
 		if (empty($root_meta))
 		{
 			throw new Exception('Unable to load manual index meta data');
 		}
 
-		$doctree[] = array(
-			'link'	=> "/manual/$language",
+		$hierarchy['index'] = array(
+			'link'	=> "/manual/$this->language",
 			'title' => $root_meta['title']
 		);
+
+		// Remove the last node from the path since it represents
+		// the current page and we don't need them in the heirarchy
+		array_pop($paths);
 
 		// Compile the path tree, starting from root down
 		// to the current page
@@ -263,20 +425,54 @@ class Controller_Manual extends Controller_Site
 			}
 
 			$concat_path .= $path;
-			$meta_file = $this->file_meta($language, $concat_path);
+			$meta_file = $this->_file_meta($concat_path);
 
 			if (empty($meta_file))
 			{
 				return false;
 			}
 
-			$doctree[] = array(
-				'link'		=> "/manual/$language/$concat_path",
+			$hierarchy[$path] = array(
+				'link'		=> "/manual/$this->language/$concat_path",
 				'title'		=> $meta_file['title']
 			);
 		}
 
-		return $doctree;
+		return $hierarchy;
+	}
+
+	/** 
+	 * Returns the full path to the doc file
+	 * 
+	 * @param string $page
+	 * @return string
+	 */
+	protected function _file($page)
+	{
+		$path = $this->language.DIRECTORY_SEPARATOR.$this->_extract_path($page);
+
+		return Kohana::find_file('manual', $path, 'md');
+	}
+
+	/** 
+	 * Returns the file meta as an array
+	 *
+	 * @param string $page
+	 * @return array
+	 */
+	protected function _file_meta($page)
+	{
+		$path = $this->language.DIRECTORY_SEPARATOR.$this->_extract_path($page);
+
+		// Find the file
+		$file = Kohana::find_file('manual', $path, 'php');
+
+		if ($file)
+		{
+			return include $file;
+		}
+
+		return false;
 	}
 
 	/** 
