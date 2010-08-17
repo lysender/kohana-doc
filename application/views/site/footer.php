@@ -6,8 +6,6 @@
 		<li><?php echo HTML::anchor('/credits', 'Credits') ?></li>
 		<li><?php echo HTML::anchor('/contact', 'Contact') ?></li>
 	</ul>
-</div>
-<div class="span-24">
 	<p><?php echo HTML::anchor('/', 'Kohana Documentation Project') ?></p>
 </div>
 

@@ -20,27 +20,63 @@
 /**************************************/
 /*              GLOBALS               */
 /**************************************/
-
+body .container {
+	color: #434343;
+}
 
 /**************************************/
 /*              HEADER                */
 /**************************************/
-
-
-
+#header h1 {
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	border-bottom:1px solid #dddddd;
+}
+#header h1 a {
+	text-decoration: none;
+}
+#header h1 span {
+	display: block;
+	font-size: 0.6em;
+	margin-top: 0.6em;
+}
 /**************************************/
 /*             NAVIGATION             */
 /**************************************/
-
-
-
+#head_nav ul {
+	list-style-type: none;
+	float: right;
+	width: 500px;
+	text-align: right;
+}
+#head_nav li {
+	display: inline;
+}
 /**************************************/
 /*            MAIN CONTENT            */
 /**************************************/
-
+.basic-nav .next {
+	text-align: right;
+}
 
 
 /**************************************/
 /*               FOOTER               */
 /**************************************/
-
+#footer .container {
+	margin-top: 10px;
+	border-top: 1px solid #dddddd;
+}
+#foot_nav {
+	text-align: center;
+}
+#foot_nav ul {
+	list-style-type: none;
+	margin: 0.6em 0;
+}
+#foot_nav li {
+	display: inline;
+}
+#foot_nav li:first-child {
+	margin-left: 0;
+}

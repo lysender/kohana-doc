@@ -1,4 +1,7 @@
-<h1><?php echo HTML::anchor('/', 'Kohana Documentation Project') ?></h1>
+<h1>
+	<?php echo HTML::anchor('/', 'Kohana Documentation Project') ?>
+	<span class="caps thin">Unofficial Documentation For Kohana PHP Framework</span>
+</h1>
 <div id="head_nav" class="span-24 last">
 	<ul>
 		<li><?php echo HTML::anchor('/about', 'About') ?></li>

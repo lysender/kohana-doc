@@ -1,8 +1,15 @@
 <!-- Basic navigation -->
 <?php if (isset($basic_nav) && !empty($basic_nav)): ?>
-<div class="basic-nav">
-<?php foreach ($basic_nav as $key => $node): ?>
-	<span class="<?php echo $key ?>"><?php echo HTML::anchor($basic_nav[$key]['link'], $basic_nav[$key]['title']) ?></span>
-<?php endforeach ?>
+<div class="basic-nav span-17 last">
+	<div class="prev span-8">
+	<?php if (!empty($basic_nav['prev'])): ?>
+		<?php echo HTML::anchor($basic_nav['prev']['link'], $basic_nav['prev']['title']) ?>
+	<?php endif ?>
+	</div>
+	<div class="next span-8 last">
+	<?php if (!empty($basic_nav['next'])): ?>
+		<?php echo HTML::anchor($basic_nav['next']['link'], $basic_nav['next']['title']) ?>
+	<?php endif ?>
+	</div>
 </div>
 <?php endif ?>
