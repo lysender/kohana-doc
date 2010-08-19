@@ -87,7 +87,7 @@ form div { margin-bottom: .8em; }
 
 /*** COLORS ***/
 a:link { text-decoration: underline; color: #36c; }
-a:visited { text-decoration: underline; color: #99c; }
+a:visited { text-decoration: underline; color: #36c; }
 a:hover { text-decoration: underline; color: #c33; }
 a:active, a:focus { text-decoration: underline; color: #000; }
 code, pre { color: #c33; } /*** very optional, but still useful. W3C uses about the same colors for codes ***/
@@ -237,32 +237,6 @@ hr.space {background:#fff;color:#fff;}
 
 /*** NO LINK ICON (use class="noicon" to remove the link icon from a specific link) ***/
 body a.noicon { background:none !important; padding:0 !important; margin:0 !important; }
-
-/*** LINK PADDING FOR ICONS ***/
-a[href^="http:"],
-a[href^="mailto:"],
-a[href$=".pdf"],
-a[href$=".doc"],
-a[href$=".xls"],
-a[href$=".rss"],
-a[href$=".rdf"],
-a[href^="aim:"] { padding:2px 22px 2px 0; margin:-2px 0; background-repeat: no-repeat; background-position: right center; }
-
-/*** EXTERNAL LINK ICONS ***/
-a[href^="http:"]          { background-image: url(../images/icons/external.png); padding-right: 14px; }
-a[href^="mailto:"]        { background-image: url(../images/icons/email.png); }
-a[href^="http:"]:visited  { background-image: url(../images/icons/visited.png); }
-
-/*** FILE LINK ICONS ***/
-a[href$=".pdf"]   { background-image: url(../images/icons/pdf.png); }
-a[href$=".doc"]   { background-image: url(../images/icons/doc.png); }
-a[href$=".xls"]   { background-image: url(../images/icons/xls.png); }
-
-/*** MISCELLANEOUS LINK ICONS ***/
-a[href$=".rss"],
-a[href$=".rdf"]   { background-image: url(../images/icons/feed.png); }
-a[href^="aim:"]   { background-image: url(../images/icons/im.png); }
-a[href^="http://yourwebsite.com"] { background:none; padding:0; margin:0; }
 
 /*** TEXT CLASSES ***/
 .small {font-size:.8em;margin-bottom:1.875em;line-height:1.875em;}

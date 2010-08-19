@@ -6,6 +6,7 @@ return array(
 	'parent'	=> 'index',
 	'children'	=> array(
 		'about'			=> 'About Kohana',
+		'file-structure'=> 'File Structure',
 		'conventions'	=> 'Coding Conventions and Styles',
 		'mvc'			=> 'Model View Controller',
 		'hmvc'			=> 'Hierarchical Model View Controller',

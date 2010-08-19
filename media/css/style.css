@@ -21,16 +21,25 @@
 /*              GLOBALS               */
 /**************************************/
 body .container {
-	color: #434343;
+	color: #222222;
+}
+#header a,
+#manual a,
+#footer a {
+	text-decoration: none;
 }
 
 /**************************************/
 /*              HEADER                */
 /**************************************/
+#header {
+	padding-top: 15px;
+}
 #header h1 {
 	margin-bottom: 10px;
 	padding-bottom: 10px;
 	border-bottom:1px solid #dddddd;
+	margin-top: 0;
 }
 #header h1 a {
 	text-decoration: none;
@@ -52,19 +61,58 @@ body .container {
 #head_nav li {
 	display: inline;
 }
-/**************************************/
-/*            MAIN CONTENT            */
-/**************************************/
 .basic-nav .next {
 	text-align: right;
 }
 
+/** Topic hierarchy menu **/
+ul#topic_hierarchy {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	font-size: 1.15em;
+	line-height: 1.5em;
+	margin-bottom: 0.9em;
+}
+ul#topic_hierarchy li {
+	background: transparent url(../images/app-icons/bullet_arrow_up.png) no-repeat 0px 2px;
+	padding-left: 1.15em;
+	margin-left: 0;
+	padding-bottom: 0.3em;
+	margin-bottom: 0.3em;
+	border-bottom: dotted 1px #dddddd;
+}
+
+/** Topic group menu **/
+ul#topic_group a {
+	text-decoration: none;
+}
+li.currently-viewed a {
+	color: #c33;
+	font-weight: bold;
+}
+/**************************************/
+/*            MAIN CONTENT            */
+/**************************************/
+#manual {
+	margin-top: 20px;
+}
+.doc-content {
+	padding-top: 10px;
+	margin-bottom: 40px;
+}
 
 /**************************************/
 /*               FOOTER               */
 /**************************************/
+#footer a {
+	color: #999999;
+}
+#footer a:hover {
+	color: #780c0c;
+}
 #footer .container {
-	margin-top: 10px;
+	margin-top: 50px;
 	border-top: 1px solid #dddddd;
 }
 #foot_nav {

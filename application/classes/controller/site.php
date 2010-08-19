@@ -46,7 +46,8 @@ abstract class Controller_Site extends Controller_Template
 			$this->template->styles = array(
 				'media/css/screen.css'	=> 'screen, projection',
 				'media/css/print.css'	=> 'print',
-				'media/css/style.css'	=> 'screen, projection'
+				'media/css/style.css'	=> 'all',
+				'media/css/kodoc.css'	=> 'all'
 			);
 
 			$this->template->scripts = array(

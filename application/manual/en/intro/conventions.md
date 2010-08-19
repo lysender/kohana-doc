@@ -1,6 +1,6 @@
 # Conventions
 
-It is encouraged to follow Kohana's [coding style](http://dev.kohanaframework.org/wiki/kohana2/CodingStyle). This uses [BSD/Allman style](http://en.wikipedia.org/wiki/Indent_style#BSD.2FAllman_style) bracing, among other things.
+It is encouraged to follow Kohana's coding style. This uses [BSD/Allman style](http://en.wikipedia.org/wiki/Indent_style#BSD.2FAllman_style) bracing, among other things.
 
 ## Class Names and File Location {#classes}
 
@@ -31,43 +31,74 @@ Form                  | classes/form.php
 In order to produce highly consistent source code, we ask that everyone follow the coding standards as closely as possible.
 
 ### Brackets
-Please use [BSD/Allman Style](http://en.wikipedia.org/wiki/Indent_style#BSD.2FAllman_style) bracketing.
+Please use [BSD/Allman Style](http://en.wikipedia.org/wiki/Indent_style#BSD.2FAllman_style) bracketing. Example:
+
+	// Recommended
+	if ($total > 0)
+	{
+		$success = true
+	}
+
+The following code sample of bracket style is not recommended:
+
+	// Not recommended
+	if ($total > 0) {
+		$success = true;
+	}
 
 ### Naming Conventions
 
 Kohana uses under_score naming, not camelCase naming.
 
+	// Recommended
+	$table_prefix = 'ko_';
+
+	// Not recommended
+	$tablePrefix = 'ko_';
+
+	// Not recommended
+	$TablePrefix = 'ko_';
+
 #### Classes
 
-	// Library, uses _Core suffix
-	class Beer_Core {
+First letter of the word should be upper case. When using multiple words, words are separated by underscore &quot;_&quot;.
 
-	// Library extension, uses no suffix
-	class Beer extends Beer_Core
+	// Controller class
+	class Controller_Template extends Controller {
 
-	// Controller class, uses _Controller suffix
-	class Apple_Controller extends Controller {
+	}
 
-	// Model class, uses _Model suffix
-	class Cheese_Model extends Model {
+	// Another controller class
+	class Controller_Site extends Controller_Template
+	
+	}
 
-	// Helper class
-	class peanut {
+	// Model class
+	class Model_User extends Model {
+
+	}
+
+	// Another model class
+	class Model_Product {
+
+	}
 
 When creating an instance of a class, don't use parentheses if you're not passing something on to the constructor:
 
 	// Correct:
-	$db = new Database;
+	$db = new User;
 
 	// Incorrect:
-	$db = new Database();
+	$db = new User();
 
 #### Functions and Methods
 
 Functions should be all lowercase, and use under_scores to separate words:
 
-	function drink_beverage($beverage)
+	public function find_user($name)
 	{
+
+	}
 
 #### Variables
 

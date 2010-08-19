@@ -46,8 +46,10 @@
 <div id="manual" class="container">
 	<div id="content" class="span-17 suffix-1">
 		<?php echo $basic_nav ?>
-		<div class="doc-content"><?php echo $content ?></div>
-		<?php echo $topics ?>
+		<div class="doc-content clear">
+			<?php echo $content ?>
+			<?php echo $topics ?>
+		</div>
 		<?php echo $basic_nav ?>
 	</div>
 	<div id="sidebar" class="span-6 last"><?php echo $sidebar ?></div>

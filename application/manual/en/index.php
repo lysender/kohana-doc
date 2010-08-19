@@ -5,12 +5,18 @@ return array(
 	'self'		=> 'index',
 	'parent'	=> null,
 	'children'	=> array(
-		'intro'			=> 'Introduction to Kohana PHP Framework',
+		'disclaimer'	=> 'Disclaimer',
+		'assumes'		=> 'This Guide Assumes',
+		'intro'			=> 'Introduction to Kohana Framework',
 		'learn'			=> 'Learning Kohana',
 		'reference' 	=> 'Kohana API Reference',
 		'doc-standard'	=> 'Documentation Standard',
-		'copyright'		=> 'Copyright Information',
-		'license'		=> 'License Agreement',
-		'credits'		=> 'Credits'
+		'faq'			=> 'Frequently Asked Questions',
+		'contribute'	=> 'Contribute',
+		'copyright'		=> 'Copyright',
+		'license'		=> 'License',
+		'credits'		=> 'Credits',
+		'about'			=> 'About this Documentation',
+		'contact'		=> 'Contact'
 	)
 );

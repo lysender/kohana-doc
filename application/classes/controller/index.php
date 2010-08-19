@@ -7,10 +7,7 @@ class Controller_Index extends Controller_Site
 	 */
 	public function action_index()
 	{
-		$this->template->title = 'Welcome';
-		$this->template->description = 'Documentation project for Kohana v3 PHP Framework';
-		$this->template->keywords = 'kohana, documentation, tutorial';
-		
-		$this->view = View::factory('index/index');
+		$config = Kohana::config('manual');
+		$this->request->redirect("/manual/$config->default_language");
 	}
 }
