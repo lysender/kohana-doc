@@ -3,7 +3,7 @@
 In Kohana, there are three (3) __paths__ (directories) where most of the PHP codes are located. They are the following:
 
 * __Application path__ - usually named `application` - contains the project codes and other files usually just created for the specific project.
-* __Modules paths__ -usually named `modules` - Kohana extensions that can be reused by several projects such as database library, ORM and caching module.
+* __Modules paths__ - usually named `modules` - Kohana extensions that can be reused by several projects such as database library, ORM and caching module.
 * __System path__ - usually named `system` - Kohana's core files where basic functionality of the framework are located.
 
 These three directories share the same directory structure. 
@@ -96,7 +96,7 @@ default directories:
 classes/
 :  All classes that you want to [autoload](using.autoloading) should be stored here.
    This includes controllers, models, and all other classes. All classes must
-   follow the [class naming conventions](about.conventions#classes).
+   follow the [class naming conventions](intro.conventions#classes).
 
 config/
 :  Configuration files return an associative array of options that can be
@@ -106,7 +106,7 @@ config/
 i18n/
 :  Translation files return an associative array of strings. Translation is
    done using the `__()` method. To translate "Hello, world!" into Spanish,
-   you would call `__('Hello, world!')` with [I18n::$lang] set to "es-es".
+   you would call `__('Hello, world!')` with [I18n::$lang](learn.i18n) set to "es-es".
    Of course, you need the Spanish translation file for the translation to work.
    See [translation usage](using.translation) for more information.
 

@@ -9,12 +9,14 @@
 	- If you have a different setup or different operating system (ex: Mac), copy the files to your web server's document root. 
 	- You may copy it as-is: copying the whole directory `kohana` and no configuration is needed, or copy the contents to directly to the document root but you need to change some configurations that will be discussed later on.
 	- You can also create a virtual host and copy the files to it. However, creating virtual host is not covered in this documentation.
+	- ![Upload to server](/media/images/manual/intro/upload-files.png "Upload files to server")
 4. Open `application/bootstrap.php` and make the following changes:
 	- Set the default [timezone](http://php.net/timezones) for your application. For example, I changed it to `Asia/Manila` because I' living in the Philippines.
 	- Set the `base_url` in the [Kohana::init] call to reflect the location of the kohana folder on your server.
 		- If the directory name is `kohana` and it is directly under the webserver's document root, change `base_url` to `/kohana/`.
 		- If the directory name is `stealthproject` and is also directly under the document root directory, change `base_url` to `/stealthproject`.
 		- If you copied the contents directly to the document root, change `base_url` to `/`.
+	- ![Edit bootstrap.php](/media/images/manual/intro/bootstrap.png "Edit bootstrap")
 6. Make sure the `application/cache` and `application/logs` directories are writable by the web server.
 	- For Linux systems, set the following permissions / ownership:
 		- For a standard setup, run the `chown` command to set Apache user able to write into the cache and logs directory. If your username is `lonedev` and your Apache's username is `apache`, simply execute this command as root:

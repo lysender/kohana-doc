@@ -9,7 +9,7 @@ Class names in Kohana follow a strict convention to facilitate [autoloading](usi
 The following conventions apply:
 
 1. CamelCased class names should not be used, except when it is undesirable to create a new directory level.
-2. All class file names and directory names are lowercase.
+2. All class file names and directory names are __lowercase__.
 3. All classes should be in the `classes` directory. This may be at any level in the [cascading filesystem](about.filesystem).
 
 [!!] Unlike Kohana v2.x, there is no separation between "controllers", "models", "libraries" and "helpers". All classes are placed in the "classes/" directory, regardless if they are static "helpers" or object "libraries". You can use whatever kind of class design you want: static, singleton, adapter, etc.

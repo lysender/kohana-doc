@@ -7,10 +7,10 @@ return array(
 	'children'	=> array(
 		'about'			=> 'About Kohana',
 		'file-structure'=> 'File Structure',
+		'filesystem'	=> 'Cascading Filesystem',
 		'conventions'	=> 'Coding Conventions and Styles',
 		'mvc'			=> 'Model View Controller',
 		'hmvc'			=> 'Hierarchical Model View Controller',
-		'filesystem'	=> 'Cascading Filesystem',
 		'requirements'	=> 'Framework Requirements',
 		'installation'	=> 'Installation',
 		'upgrading'		=> 'Upgrading Kohana'
