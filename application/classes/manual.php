@@ -155,45 +155,41 @@ class Manual
 
 			throw new Exception('Design error: A topic should always contain more than 1 child topic');
 		}
-		elseif ($current_topic != $first_topic AND $current_topic != $last_topic)
+		elseif ($current_topic != $first_topic)
 		{
-			// Case #3: We are in the middle of topics, not first, not last
+			// Case #3: We are in the middle of topics or we are at the last
 			// Previous = previous topic of the group
-			// Next = next topic of the group
+			// Next = next topic of the group or parent's next topic
 			
-			// We need to loop, there's no other way
-			$tmp_prev = null;
-			$tmp_next = null;
-			$tmp = null;
-			$found = false;
-			
-			foreach ($this->_topic_group as $key => $node)
-			{
-				if ($found)
-				{
-					$tmp_next = $key;
-					break;
-				}
-
-				if ($key == $current_topic)
-				{
-					$tmp_prev = $tmp;
-					$found = true;
-				}
-
-				$tmp = $key;
+			$prev_next = $this->_prev_next($this->_topic_group, $current_topic);
+			if ($prev_next['prev'])
+			{	
+				$nav['prev'] = $prev_next['prev'];
 			}
 
-			$nav['prev'] = array(
-				'link'	=> $this->_topic_group[$tmp_prev]['link'],
-				'title'	=> $this->_topic_group[$tmp_prev]['title']
-			);
-			
-			$nav['next'] = array(
-				'link'	=> $this->_topic_group[$tmp_next]['link'],
-				'title'	=> $this->_topic_group[$tmp_next]['title']
-			);
+			if ($current_topic != $last_topic)
+			{
+				// If the current topic is not the last topic, then the next
+				// topic is indeed the next
+				$nav['next'] = $prev_next['next'];
+			}
+			else
+			{
+				// Otherwise, we need to look for the parents topic group
+				$parent_page = $this->_remove_part($this->page, $this->page_meta['self']);
+				$parent_meta = $this->_file_meta($parent_page);
+
+				if ($parent_meta['parent'])
+				{
+					$grand_page = $parent_meta['parent'];
+					$grand_group = $this->_topic_group($grand_page, $parent_meta['parent']);
+					$prev_next = $this->_prev_next($grand_group, $parent_meta['self']);
+
+					$nav['next'] = $prev_next['next'];
+				}
+			}
 		}
+
 		
 		// If no previous link is given, it is assume as the parent topic
 		if (empty($nav['prev']))
@@ -218,6 +214,64 @@ class Manual
 		}
 
 		return $nav;
+	}
+
+	/** 
+	 * Returns the previous and next topic with link and title
+	 *
+	 * @param array $topics
+	 * @param string $current_topic
+	 * @return array
+	 */
+	protected function _prev_next(array & $topics, $current_topic)
+	{
+		// We need to loop, there's no other way
+		$tmp_prev = null;
+		$tmp_next = null;
+		$tmp = null;
+		$found = false;
+			
+		foreach ($topics as $key => $node)
+		{
+			if ($found)
+			{
+				$tmp_next = $key;
+				break;
+			}
+
+			if ($key == $current_topic)
+			{
+				$tmp_prev = $tmp;
+				$found = true;
+			}
+
+			$tmp = $key;
+		}
+
+		$result = array(
+			'prev' => ($found) ? $topics[$tmp_prev] : null,
+			'next' => ($tmp_next) ? $topics[$tmp_next] : null
+		);
+
+		return $result;	
+	}
+
+	/** 
+	 * Removes a part of the page string where page is a dot seprated string
+	 *
+	 * @param string $original
+	 * @param string $remove
+	 * @return array
+	 */
+	protected function _remove_part($original, $remove)
+	{
+		$new = str_replace($remove, '', $original);
+		if (substr($new, -1, 1) == '.')
+		{
+			$new = substr_replace($new, '', -1, 1);
+		}
+
+		return $new;
 	}
 
 	/** 
