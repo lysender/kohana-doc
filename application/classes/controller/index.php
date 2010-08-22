@@ -7,7 +7,6 @@ class Controller_Index extends Controller_Site
 	 */
 	public function action_index()
 	{
-		$config = Kohana::config('manual');
-		$this->request->redirect("/manual/$config->default_language");
+		$this->template->title = 'Kodoc';
 	}
 }

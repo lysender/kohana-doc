@@ -49,22 +49,27 @@ class Controller_Manual extends Controller_Site
 		
 		// Load title and content
 		$this->template->title = $manual->page_meta['title'];
-		$this->view = Markdown(file_get_contents($manual->file));
+		$this->view = View::factory('manual/doc')
+			->bind('content', $content)
+			->bind('sidebar', $sidebar)
+			->bind('nav', $nav)
+			->bind('topics', $topics);
+
+		$content = Markdown(file_get_contents($manual->file));
 
 		// Build the sidebar
 		$sidebar_info = $manual->sidebar_nav();
-		$this->template->sidebar = View::factory('manual/sidebar')
+		$sidebar = View::factory('manual/sidebar')
 			->bind('sidebar_info', $sidebar_info);
 
 		// Build the child topics
-		$topics = $manual->topics();
-
-		$this->template->topics = View::factory('manual/topics')
-			->bind('topics', $topics);
+		$current_topics = $manual->current_topics();
+		$topics = View::factory('manual/topics')
+			->bind('topics', $current_topics);
 		
 		// Build the basic nav
 		$basic_nav = $manual->basic_nav();
-		$this->template->basic_nav = View::factory('manual/nav')
+		$nav = View::factory('manual/nav')
 			->bind('basic_nav', $basic_nav);
 	}
 }

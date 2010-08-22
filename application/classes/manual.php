@@ -94,12 +94,12 @@ class Manual
 		$last_topic = null;
 		$first_child_topic = null;
 
+		$this->topic_hierarchy($this->page);
+		$this->topic_group();
+
 		$topic_group_count = count($this->_topic_group);
 
-		$this->topic_hierarchy($this->page);
-		$this->topic_group($this->page);
-
-		if (!empty($this->_topic_group))
+		if ( ! empty($this->_topic_group))
 		{
 			// Get first topic group entry
 			$keys = array_keys($this->_topic_group);
@@ -126,8 +126,8 @@ class Manual
 			// Case #1: The current topic has child topics
 			// Next = First child topic
 			$nav['next'] = array(
-				'link'	=> $first_child_topic,
-				'title'	=> $this->_topics[$first_child_topic]
+				'link'	=> $this->_topics[$first_child_topic]['link'],
+				'title'	=> $this->_topics[$first_child_topic]['title']
 			);
 		}
 		elseif ($current_topic == $first_topic AND $topic_group_count > 1)
@@ -182,7 +182,7 @@ class Manual
 				if ($parent_meta['parent'])
 				{
 					$grand_page = $parent_meta['parent'];
-					$grand_group = $this->_topic_group($grand_page, $parent_meta['parent']);
+					$grand_group = $this->_topics($grand_page, $parent_meta['parent']);
 					$prev_next = $this->_prev_next($grand_group, $parent_meta['self']);
 
 					$nav['next'] = $prev_next['next'];
@@ -293,42 +293,14 @@ class Manual
 	 *
 	 * @return array
 	 */
-	public function topics()
+	public function current_topics()
 	{
 		if ($this->_topics === null)
 		{
-			$this->_topics = $this->_topics();
+			$this->_topics = $this->_topics($this->page);
 		}
 
 		return $this->_topics;
-	}
-
-	/** 
-	 * Returns the topics for the current article
-	 * Only returns the direct child topics / articles
-	 *
-	 * @return array
-	 */
-	protected function _topics()
-	{
-		$topics = array();
-
-		// Get the current path
-		$path = "/manual/$this->language/";
-
-		// Only add the current page when it is not index
-		// Then add a dot at the end to concatenate the children
-		if ($this->page != 'index')
-		{
-			$path .= "$this->page.";
-		}
-
-		foreach ($this->page_meta['children'] as $page => $title)
-		{
-			$topics[$path.$page] = $title;
-		}
-
-		return $topics;
 	}
 
 	/** 
@@ -337,7 +309,7 @@ class Manual
 	 * @param string $page
 	 * @return array
 	 */
-	public function topic_group($page)
+	public function topic_group()
 	{
 		if ( ! $this->page_meta['parent'])
 		{
@@ -347,54 +319,60 @@ class Manual
 
 		if ($this->_topic_group === null)
 		{
-			$this->_topic_group = $this->_topic_group($page, $this->page_meta['self']);
+			$parent_page = $this->_remove_part($this->page, $this->page_meta['self']);
+			$this->_topic_group = $this->_topics($parent_page, $this->page_meta['self']);
 		}
 
 		return $this->_topic_group;
 	}
 
 	/** 
-	 * Returns the current topic's related topics
-	 * Related topics are retrived via parents child topics
+	 * Returns the page topics
+	 * When current is given, it marks the node that is 
+	 * currently viewed
 	 *
 	 * @param string $page
-	 * @param string $current_node
+	 * @param string $current
 	 * @return array
 	 */
-	protected function _topic_group($page, $current_node)
+	protected function _topics($page, $current = null)
 	{
-		// Load parent meta
-		$parent_meta = null;
-		$parent_prefix = null;
+		$page = ($page == '') ? 'index' : $page;
+		$page_meta = $this->_file_meta($page);
 
-		if ($this->page_meta['parent'] == 'index')
+		if (empty($page_meta))
 		{
-			$parent_prefix = '';
-			$parent_meta = $this->_file_meta('index');
+			// No topics
+			return false;
+		}
+
+		// Create the link prefix
+		$prefix = null;
+
+		if ($page_meta['self'] == 'index')
+		{
+			$prefix = '';
 		}
 		else
 		{
-			$parent_node = str_replace(".$current_node", '', $page);
-			$parent_meta = $this->_file_meta($parent_node);
-			$parent_prefix = "$parent_node.";
-		}
-
-		if (empty($parent_meta))
-		{
-			throw new Exception("No topic group information is found for $page");
+			$prefix = "$page.";
 		}
 
 		$topics = array();
 
 		// Build the links
-		foreach ($parent_meta['children'] as $key => $val)
+		foreach ($page_meta['children'] as $key => $val)
 		{
-			// Also marks the currently viewed article
+			// Also marks the currently viewed article if set
 			$topics[$key] = array(
-				'link'	=> "/manual/$this->language/$parent_prefix$key",
-				'title'	=> $parent_meta['children'][$key],
-				'currently_viewed' => ($key == $current_node) ? true : false
+				'link'	=> "/manual/$this->language/$prefix$key",
+				'title'	=> $val,
 			);
+
+			if ($current AND $current == $key)
+			{
+				$topics[$key]['currently_viewed'] = true;
+			}
 		}
 
 		return $topics;

@@ -32,7 +32,7 @@
 
 You should see the installation page. If it reports any errors, you will need to correct them before continuing.
 
-![Install Page](/media/images/install.png "Example of install page")
+![Install Page](/media/images/manual/intro/install.png "Example of install page")
 
 Once your install page reports that your environment is set up correctly you need to either rename or delete `install.php` in the project root directory. You should then see the Kohana welcome page:
 

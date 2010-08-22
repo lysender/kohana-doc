@@ -3,8 +3,8 @@
 <div class="doc-topics">
 	<h2>Topics</h2>
 	<ul>
-	<?php foreach ($topics as $link => $title): ?>
-		<li><?php echo HTML::anchor($link, $title) ?></li>
+	<?php foreach ($topics as $key => $node): ?>
+		<li><?php echo HTML::anchor($node['link'], $node['title']) ?></li>
 	<?php endforeach ?>
 	</ul>
 </div>
