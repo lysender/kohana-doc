@@ -9,14 +9,9 @@ return array(
 		'assumes'		=> 'This Guide Assumes',
 		'intro'			=> 'Introduction to Kohana Framework',
 		'learn'			=> 'Learning Kohana',
-		'reference' 	=> 'Kohana API Reference',
+		'reference' 	=> 'API Reference',
 		'doc-standard'	=> 'Documentation Standard',
-		'faq'			=> 'Frequently Asked Questions',
-		'contribute'	=> 'Contribute',
 		'copyright'		=> 'Copyright',
 		'license'		=> 'License',
-		'credits'		=> 'Credits',
-		'about'			=> 'About this Documentation',
-		'contact'		=> 'Contact'
 	)
 );

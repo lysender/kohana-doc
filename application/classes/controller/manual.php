@@ -41,6 +41,9 @@ class Controller_Manual extends Controller_Site
 		$page = $this->request->param('page', $config->default_page);
 		unset($config);
 
+		// Set language globally to all views
+		$this->template->bind_global('language', $language);
+
 		// Set the translation language
 		I18n::$lang = $language;
 

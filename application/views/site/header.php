@@ -4,6 +4,7 @@
 </h1>
 <div id="head_nav" class="span-24 last">
 	<ul>
+		<li><?php echo HTML::anchor('/manual', 'Manual') ?></li>
 		<li><?php echo HTML::anchor('/about', 'About') ?></li>
 		<li><?php echo HTML::anchor('/faq', 'FAQ') ?></li>
 		<li><?php echo HTML::anchor('/contribute', 'Contribute') ?></li>
