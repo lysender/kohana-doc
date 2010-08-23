@@ -16,7 +16,7 @@ The array helper class provides commonly used array operations and are wrapped i
 
 ## Test Associative Array {#is_assoc}
 
-`Arr::is_assoc` tests and array if it is associative or not. Returns true when associative.
+`Arr::is_assoc` tests an array if it is associative or not. Returns true when associative.
 
 	$post = array(
 		'username'	=> 'john.doe',
@@ -49,7 +49,7 @@ The array helper class provides commonly used array operations and are wrapped i
 	);
 	
 	// Returns "john.doe"
-	$user_id = Arr:path($post, 'user.id');
+	$user_id = Arr::path($post, 'user.id');
 	
 	// Returns "Mobile API"
 	$posted_from = Arr::path($post, 'via.name');
@@ -82,7 +82,7 @@ Using the wildcard "*" will search intermediate arrays and return an array.
 	// Returns all thumbnail URLs as an array
 	$thumbnails = Arr::path($post, 'thumbs.*.url');
 
-## Creating Array Range
+## Creating Array Range {#range}
 
 `Arr::range` fills an array with a range of number. It accepts step value as first parameter (defaults to 10) and maximum value parameter (defaults to 100).
 
@@ -92,7 +92,7 @@ Using the wildcard "*" will search intermediate arrays and return an array.
 	// Fill an array with values 5, 10, 15, 20
 	$values = Arr::range(5, 20)
 
-## Getting Array Value and Provide Default
+## Getting Array Value and Provide Default {#get}
 
 `Arr::get` retrieves a value from an array using a key. If the key does not exists in the array, a default value is returned instead.
 
@@ -147,6 +147,6 @@ If we other values for default other than `null`, we may write:
 
 The above example uses an empty string for default value. 
 
-[!!] The default value will be applied to all keys. Be sure you are not incorrectly using it for example: using default value `0` but some keys are string. In this case, `null` is the more applicable default.
+[!!] The default value will be applied to all supplied keys. Be sure you are not incorrectly using it for example: using default value `0` but some keys are string. In this case, `null` is the more applicable default and all you need to do is cast it to int.
 
 

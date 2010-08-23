@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 return array(
-	'title'		=> 'Core Reference API',
+	'title'		=> 'Core Reference',
 	'self'		=> 'core',
 	'parent'	=> 'reference',
 	'children'	=> array(

@@ -47,11 +47,16 @@ abstract class Controller_Site extends Controller_Template
 				'media/css/screen.css'	=> 'screen, projection',
 				'media/css/print.css'	=> 'print',
 				'media/css/style.css'	=> 'all',
-				'media/css/kodoc.css'	=> 'all'
+				'media/css/kodoc.css'	=> 'all',
+				'media/css/shCore.css' 	=> 'screen',
+				'media/css/shThemeKodoc.css' => 'screen'
 			);
 
 			$this->template->scripts = array(
-				'media/js/jquery-1.4.2.min.js'
+				'media/js/jquery-1.4.2.min.js',
+				'media/js//kodoc.js',
+				'media/js/shCore.js',
+				'media/js/shBrushPhp.js'
 			);
 		}
 	}

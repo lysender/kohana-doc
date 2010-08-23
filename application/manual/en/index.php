@@ -9,7 +9,7 @@ return array(
 		'assumes'		=> 'This Guide Assumes',
 		'intro'			=> 'Introduction to Kohana Framework',
 		'learn'			=> 'Learning Kohana',
-		'reference' 	=> 'API Reference',
+		'reference' 	=> 'Reference',
 		'doc-standard'	=> 'Documentation Standard',
 		'copyright'		=> 'Copyright',
 		'license'		=> 'License',
