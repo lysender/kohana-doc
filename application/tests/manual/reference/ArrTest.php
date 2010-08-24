@@ -76,4 +76,93 @@ class Reference_ArrTest extends Kohana_UnitTest_TestCase
 			array($post['thumbs'][0]['url'], $post['thumbs'][1]['url'])
 		);
 	}
+
+	public function testUnshift()
+	{
+		$array = array(
+			'name' 	=> 'John Doe',
+			'email'	=> 'john@example.com'
+		);
+
+		$copy = $array;
+
+		Arr::unshift($array, 'id', 'john.doe');
+
+		$this->assertNotEquals($array, $copy);
+
+		// Test the first element
+		$first = reset($array);
+
+		$this->assertEquals($first, $array['id']);
+	}
+
+	public function testMapTrim()
+	{
+		$data = array(
+			'post'	=> array(
+				'from'	=> '   Mobile API   ',
+				'via'	=> '  Some Provider  '
+			),
+			'date_posted' => '   2010-08-24  '
+		);
+
+		$copy = $data;
+		$this->assertEquals($copy, $data);
+
+		$data = Arr::map('trim', $data);
+
+		$this->assertNotEquals($copy, $data);
+	}
+
+	public function testMapCustomClass()
+	{
+		$data = array(
+			'total'		=> '100',
+			'details'	=> array(
+				'food'		=> '50',
+				'drinks'	=> '',
+				'tip'		=> 50,
+				'extra'		=> null
+			)
+		);
+
+		$copy = $data;
+		$this->assertEquals($data, $copy);
+
+		$testCallback = new ArrTest_Callback;
+
+		$data = Arr::map(array($testCallback, 'to_int'), $data);
+
+		$this->assertNotEquals($data, $copy);
+	}
+
+	public function testMerge()
+	{
+	
+		$john = array('name' => 'john', 'children' => array('fred', 'paul', 'sally', 'jane'));
+		$mary = array('name' => 'mary', 'children' => array('jane'));
+	 
+		// John and Mary are married, merge them together
+		$john = Arr::merge($john, $mary);
+	 
+		// The output of $john will now be:
+		// array('name' => 'mary', 'children' => array('fred', 'paul', 'sally', 'jane'))
+
+		$children_count = count($john['children']);
+
+		$this->assertEquals($children_count, 4);
+	}
+
+	public function testOverwrite()
+	{
+		
+	}
+}
+
+class ArrTest_Callback
+{
+	public function to_int($value)
+	{
+		return (int) $value;
+	}
 }

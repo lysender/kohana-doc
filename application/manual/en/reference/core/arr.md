@@ -14,7 +14,7 @@ The array helper class provides commonly used array operations and are wrapped i
 * [callback](#callback) - Creates a callable function and parameter list from a string representation
 * [flatten](#flatten) - Convert a multi-dimensional array into a single-dimensional array
 
-## Test Associative Array {#is_assoc}
+## Test associative array {#is_assoc}
 
 `Arr::is_assoc` tests an array if it is associative or not. Returns true when associative.
 
@@ -33,9 +33,9 @@ The array helper class provides commonly used array operations and are wrapped i
 	Arr::is_assoc($list_str);
 	Arr::is_assoc($list_num);
 
-## Array Using Dot Separated Path {#path}
+## Array using dot-separated path {#path}
 
-`Arr::path` Returns a value from an array using a dot separated path notation. 
+`Arr::path` returns a value from an array using a dot separated path notation.
 
 	$post = array(
 		'user'		=> array(
@@ -82,7 +82,7 @@ Using the wildcard "*" will search intermediate arrays and return an array.
 	// Returns all thumbnail URLs as an array
 	$thumbnails = Arr::path($post, 'thumbs.*.url');
 
-## Creating Array Range {#range}
+## Creating array range {#range}
 
 `Arr::range` fills an array with a range of number. It accepts step value as first parameter (defaults to 10) and maximum value parameter (defaults to 100).
 
@@ -92,7 +92,7 @@ Using the wildcard "*" will search intermediate arrays and return an array.
 	// Fill an array with values 5, 10, 15, 20
 	$values = Arr::range(5, 20)
 
-## Getting Array Value and Provide Default {#get}
+## Getting array value and provide default {#get}
 
 `Arr::get` retrieves a value from an array using a key. If the key does not exists in the array, a default value is returned instead.
 
@@ -112,7 +112,7 @@ A third parameter can be used to specify the default value.
 	// Returns 0 because subscribe does not exists in the array
 	$subscribe = Arr::get($post, 'subscribe', 0);
 
-## Getting Multiple Array Values and Provide Default
+## Getting multiple array values and provide default {#extract}
 
 `Arr::extract` retrives multiple values from an array using an array of keys. If the key does not exists in the array, a default value is set for each key and the resulting array is returned.
 
@@ -122,7 +122,7 @@ To get the username and password from $_POST array, we write:
 	//		'username'	=> 'john.doe',
 	//		'password'	=> 'secret'
 	//		'token'		=> '_secret_token_123'
-	//	);
+	// );
 	
 	// Returns an array containing user and password
 	$credentials = Arr::extract($_POST, array('username', 'password'));
@@ -141,12 +141,155 @@ If a key is not found from the $_POST array, `null` value is used instead for ev
 		'password'	=> null
 	)
 
-If we other values for default other than `null`, we may write:
+If we want to use other values for default other than `null`, we may write:
 
 	$credentials = Arr::extract($_POST, array('username', 'password'), '');
 
 The above example uses an empty string for default value. 
 
-[!!] The default value will be applied to all supplied keys. Be sure you are not incorrectly using it for example: using default value `0` but some keys are string. In this case, `null` is the more applicable default and all you need to do is cast it to int.
+[!!] The default value will be applied to all supplied keys. 
 
+## Adding value to the beginning of array {#unshift}
+
+`Arr::unshift` adds a value to the beginning of an array. It accepts three parameters: 1.) the array to modify 2.) the key to add and 3.) the value.
+
+[!!] The array is passed by reference so the original array will be modified.
+
+	$array = array(
+		'name' 	=> 'John Doe',
+		'email'	=> 'john@example.com'
+	);
+
+	Arr::unshift($array, 'id', 'john.doe');
+
+The new value of `$array` now is:
+
+	array(
+		'id'	=> 'john.doe',
+		'name'	=> 'John Doe',
+		'email'	=> 'john@example.com'
+	)
+
+## Recursive array_map {#map}
+
+`Arr::map` is a recursive version of [array_map](http://php.net/array_map), which applies the same callback to all elements in an array, including sub-arrays.
+
+[!!] Unlike `array_map`, this method requires a callback and will only map a single array.
+
+Our first example is using a multi-dimensional array of strings and we want trim trailing whitespace on each element of the array. We will use `trim` as the callback here.
+
+	// Sample data with values having trailing whitespace
+	$data = array(
+		'post'	=> array(
+			'from'	=> '   Mobile API   ',
+			'via'	=> '  Some Provider  '
+		),
+		'date_posted' => '   2010-08-24  '
+	);
+
+	// Trim all values recursively
+	$data = Arr:map('trim', $data);
+
+The value of `$data` now looks like this:
+
+
+	$data = array(
+		'post'	=> array(
+			'from'	=> 'Mobile API',
+			'via'	=> 'Some Provider'
+		),
+		'date_posted' => '2010-08-24'
+	);
+
+Our next example uses a custom callback where a callback is a method of a class. Assuming we have a callback class like this:
+
+	class ArrTest_Callback
+	{
+		public function to_int($value)
+		{
+			return (int) $value;
+		}
+	}
+
+`ArrTest_Callback` has a method `to_int` which casts a value to integer and return the result. 
+
+	$data = array(
+		'total'		=> '100',
+		'details'	=> array(
+			'food'		=> '50',
+			'drinks'	=> '',
+			'tip'		=> 50,
+			'extra'		=> null
+		)
+	);
+
+	$testCallback = new ArrTest_Callback;
+	$data = Arr::map(array($testCallback, 'to_int'), $data);
+
+To pass a class method as a callback, a callback must be in an array form: the first element is the object and the second element is the method name. Our data now contains all integers.
+
+	$data = array(
+		'total'		=> 100,
+		'details'	=> array(
+			'food'		=> 50,
+			'drinks'	=> 0,
+			'tip'		=> 50,
+			'extra'		=> 0
+		)
+	);
+
+## Merge arrays recursively {#merge}
+
+`Arr::merge` merges arrays recursively and preserves all keys.
+
+[!!] This is not the same as [array_merge_recursive](http://php.net/array_merge_recursive)!
+
+	$john = array(
+		'name' => 'john', 
+		'children' => array(
+			'fred', 
+			'paul', 
+			'sally', 
+			'jane'
+		)
+	);
+
+	$mary = array(
+		'name' => 'mary', 
+		'children' => array('jane')
+	);
+ 
+	// John and Mary are married, merge them together
+	$merged = Arr::merge($john, $mary);
+	 
+The output of `$merged` will now be:
+
+	array(
+		'name' => 'mary',
+		'children' => array(
+			'fred',
+			'paul',
+			'sally', 
+			'jane'
+		)
+	)
+
+`Arr::merge` accepts indefinite number of array input. 
+
+	$merged = Arr::merge($ar1, $ar2, $ar3, $ar4, $ar5);
+
+## Overwrite array with other array {#overwrite}
+
+`Arr::overwrite` overwrites an array with input arrays. It accepts a minimum of two parameters. First parameter is the master array to be overwritten. The rest of the parameters are also arrays that will overwrite the master array.
+
+[!!] Keys that do not exist in the first array will not be added!
+
+     $a1 = array('name' => 'john', 'mood' => 'happy', 'food' => 'bacon');
+     $a2 = array('name' => 'jack', 'food' => 'tacos', 'drink' => 'beer');
+
+     // Overwrite the values of $a1 with $a2
+     $array = Arr::overwrite($a1, $a2);
+
+     // The output of $array will now be:
+     array('name' => 'jack', 'mood' => 'happy', 'food' => 'bacon')
 
